@@ -7,6 +7,7 @@ from src.parser.artist_data_parser import get_artists_data
 from src.parser.genre_page_data_parser import get_id_name_genres_of_artist
 
 
+# TODO: Вынести в отдельный модуль
 def get_all_regions(data):
     all_regions = []
     for artist_id in data:
