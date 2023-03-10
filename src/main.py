@@ -52,12 +52,6 @@ async def main():
     for key, value in data.items():
         final_data[key] = value
 
-    """"with open('../data/test.json', 'r') as f:
-        existing_data = json.load(f)
-
-    for key, value in data.items():
-        existing_data[key] = value"""
-
     all_regions = get_all_regions(final_data)
 
     with open('../data/regions.json', 'w', encoding="utf-8") as f:

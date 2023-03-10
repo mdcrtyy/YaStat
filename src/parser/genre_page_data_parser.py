@@ -23,7 +23,7 @@ def get_id_name_genres_of_artist(url):
             artist_genres = artist.find_all('a', class_='d-link deco-link d-link_muted deco-link_muted')
             list_of_genres = [main_genre.lower()]
             for genre in artist_genres:
-                if genre.text != 'рэп и хип-хоп':
+                if genre.text != main_genre.lower():
                     list_of_genres.append(genre.text)
             data[artist_id] = {'Name': artist_name, 'Genres': list_of_genres}
 
@@ -35,3 +35,4 @@ def get_id_name_genres_of_artist(url):
         print(f'Unexpected error: {e}')
     finally:
         return data
+
