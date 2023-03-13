@@ -1,21 +1,52 @@
-"""
-Модуль, вовзращающий словарь жанров в виде ключ-значение, где ключ - название на английском
-"""
+import psycopg2
+import json
 
-import re
-import requests
-from bs4 import BeautifulSoup as bs
+conn = psycopg2.connect(
+    user="mdcrtyy",
+    host="localhost",
+    port="5432",
+    database="yastat"
+)
 
-headers = {'Accept-Language': 'en-US,en;q=1'}
+
+def insert_regions_data():
+    with open('../data/input/info_about_regions.json', 'r') as f:
+        info_about_regions = json.load(f)
+
+    regions = []
+    for region_id, region_data in info_about_regions.items():
+        region_name = region_data.get('name', '')
+        population = region_data.get('population', '')
+        regions.append((region_id, region_name, population))
+
+    cur = conn.cursor()
+
+    sql_regions = """INSERT INTO regions(id, region_name, population)
+             VALUES (%s, %s, %s)"""
+
+    cur.executemany(sql_regions, regions)
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
-def get_all_genres(url):
-    data = {}
-    request = requests.get(url, headers=headers)
-    soup = bs(request.text, "html.parser")
+def insert_genres_data():
+    with open('../data/input/all_genres.json', 'r') as f:
+        info_about_genres = json.load(f)
 
-    genres_block = soup.find('div', class_='page-main__metatags-line page-main__metatags-line_deep page-main__metatags-line_columns page-main__metatags-line_columns-c4')
-    print(genres_block)
-    return data
+    genres = []
+    for genre_id, genre_data in info_about_genres.items():
+        genre_name = genre_data
+        genres.append((genre_id, genre_name))
+
+    cur = conn.cursor()
+
+    sql_genres = """INSERT INTO genres(id, genre_name)
+                 VALUES (%s, %s)"""
+
+    cur.executemany(sql_genres, genres)
+    conn.commit()
+    cur.close()
+    conn.close()
 
 

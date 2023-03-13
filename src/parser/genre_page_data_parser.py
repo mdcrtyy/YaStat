@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 
 
+# Функция, получающая айди и имя артистов, пробегая по страницам жанра
 def get_id_name_genres_of_artist(url):
     data = {}
     try:
@@ -36,3 +37,34 @@ def get_id_name_genres_of_artist(url):
     finally:
         return data
 
+
+# Функция, возвращающая жанр страницы
+def get_page_genre(url):
+    try:
+        request = requests.get(url)
+        soup = bs(request.text, "html.parser")
+        main_genre = soup.find('h1', class_='d-header__title-text typo typo-h1_big').text.replace(' ', '_')
+    except requests.exceptions.RequestException as e:
+        print(f'Request failed: {e}')
+    except bs.exceptions.BeautifulSoup as e:
+        print(f'Failed to parse HTML: {e}')
+    except Exception as e:
+        print(f'Unexpected error: {e}')
+    finally:
+        return main_genre
+
+
+def get_all_data_for_all_pages_and_genres(list_of_genres):
+    data = {}
+    for genre in list_of_genres:
+        for i in range(1):
+            if i == 0:
+                url = f'https://music.yandex.ru/genre/{genre}/artists'
+                for key, value in get_id_name_genres_of_artist(url).items():
+                    data[key] = value
+            else:
+                url = f'https://music.yandex.ru/genre/{genre}/artists?page={i}'
+                for key, value in get_id_name_genres_of_artist(url).items():
+                    data[key] = value
+        print('Информация по страницам жанра собрана \n')
+    return data
